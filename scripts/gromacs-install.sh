@@ -59,13 +59,14 @@ tar $taroption $downloaddir/$FILE
 cd $downloaddir/$name-$version
 # Loading dependency modules
 # Reproducibilty depends on modules. So, decide for yourself which one you need. These are the latest/ only modules available.
-# create LAMMPS BUILD DIR
 
 module load cmake/3.22.1
 module load gcc/9.3.0
 module load mpi/openmpi/2.1.1
-module load cuda/11.6.0
 module load python/3.10.2
+module unload cuda
+
+# create BUILD DIR
 rm -rf $sourcedir
 mkdir -p $sourcedir
 cd $downloaddir/$name-$version
@@ -84,6 +85,7 @@ cmake .. \
 make -j $nthreads
 make install -j $nthreads
 
+module unload cuda
 mkdir -p $downloaddir/$name-$version/mpi_s
 cd $downloaddir/$name-$version/mpi_s
 export mpisdir="$sourcedir/mpi_s"
@@ -91,8 +93,8 @@ cmake .. \
 -DGMX_FFT_LIBRARY=fftw3 \
 -DCMAKE_INSTALL_PREFIX="${mpisdir}" \
 -DREGRESSIONTEST_DOWNLOAD=OFF \
--DCMAKE_C_COMPILER=mpicc \
--DCMAKE_CXX_COMPILER=mpic++ \
+-DCMAKE_C_COMPILER=gcc \
+-DCMAKE_CXX_COMPILER=g++ \
 -DGMX_MPI=on \
 -DGMX_SIMD=SSE4.1 \
 -DGMX_DOUBLE=off
@@ -116,27 +118,32 @@ cmake .. \
 make -j $nthreads
 make install -j $nthreads
 
+module load cuda/11.6.0
 mkdir -p $downloaddir/$name-$version/gpu_s
 cd $downloaddir/$name-$version/gpu_s
 export gpusdir="$sourcedir/gpu_s"
 
 cmake .. \
 -DCMAKE_INSTALL_PREFIX="${gpusdir}" \
--DGMX_FFT_LIBRARY=fftw3 \
 -DREGRESSIONTEST_DOWNLOAD=OFF \
 -DCMAKE_C_COMPILER=gcc \
 -DCMAKE_CXX_COMPILER=g++ \
 -DGMX_DOUBLE=off \
+-DGMX_MPI=on \
 -DGMX_SIMD=SSE4.1 \
 -DGMX_GPU=CUDA
 make -j $nthreads
 make install -j $nthreads
 
 cp -r $mpiddir/* $sourcedir/.
+cp $mpisdir/lib64/* $sourcedir/lib64/.
+cp $gpusdir/lib64/* $sourcedir/lib64/.
+cp $serialdir/lib64/* $sourcedir/lib64/.
+cp $gpusdir/bin/gmx_mpi $sourcedir/bin/mdrun_gpu
 cp $mpisdir/bin/gmx_mpi $sourcedir/bin/mdrun_mpi
-cp $gpusdir/bin/gmx $sourcedir/bin/mdrun_gpu
 cp $serialdir/bin/gmx $sourcedir/bin/.
-mv $sourcedir/bin/gmx_mpi_d $sourcedir/bin/mdrun_mpi_d
+cp $sourcedir/bin/gmx_mpi_d $sourcedir/bin/mdrun_mpi_d
+rm -f $sourcedir/bin/gmx_*
 
 rm -rf $mpisdir $gpusdir $mpiddir $serialdir $sourcedir/lib64/cmake
 
@@ -153,6 +160,7 @@ cat > $moduledir/$name/$version.$subversion.lua << EOF
 -- -*- $name-$version.$subversion.lua -*- --
 depends_on("cuda")
 depends_on("gcc/9.3.0")
+depends_on("mpi/openmpi/2.1.1")
 depends_on("cuda/11.6.0")
 whatis("Gromacs MD Simulation Package")
 help([[
