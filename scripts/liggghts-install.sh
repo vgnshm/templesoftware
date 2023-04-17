@@ -90,7 +90,7 @@ fi
 	rm -f $moduledir/$name/$version.lua
 #fi
 cat > $moduledir/$name/$version.lua << EOF
--- -*- lua -*-
+-- -*- $name-$version.lua -*- --
  
 depends_on("mpi/openmpi/2.1.1")
 depends_on("vtk/7.1.1")
