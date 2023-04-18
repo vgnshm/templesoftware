@@ -78,7 +78,7 @@ export serialdir="$sourcedir/serial"
 cmake .. \
 -DGMX_FFT_LIBRARY=fftw3 \
 -DCMAKE_INSTALL_PREFIX="${serialdir}" \
--DGMX_SIMD=SSE4.1 \
+-DGMX_SIMD=AVX2_256 \
 -DREGRESSIONTEST_DOWNLOAD=OFF \
 -DCMAKE_C_COMPILER=gcc \
 -DCMAKE_CXX_COMPILER=g++
@@ -96,8 +96,9 @@ cmake .. \
 -DCMAKE_C_COMPILER=gcc \
 -DCMAKE_CXX_COMPILER=g++ \
 -DGMX_MPI=on \
--DGMX_SIMD=SSE4.1 \
--DGMX_DOUBLE=off
+-DGMX_SIMD=AVX2_256 \
+-DGMX_DOUBLE=off \
+-DGMX_GPU=off
 make -j $nthreads
 make install -j $nthreads
 
@@ -113,7 +114,7 @@ cmake .. \
 -DCMAKE_CXX_COMPILER=mpic++ \
 -DGMX_MPI=on \
 -DGMX_DOUBLE=on \
--DGMX_SIMD=SSE4.1 \
+-DGMX_SIMD=AVX2_256 \
 -DBUILD_SHARED_LIBS=on
 make -j $nthreads
 make install -j $nthreads
@@ -126,24 +127,24 @@ export gpusdir="$sourcedir/gpu_s"
 cmake .. \
 -DCMAKE_INSTALL_PREFIX="${gpusdir}" \
 -DREGRESSIONTEST_DOWNLOAD=OFF \
+-DGMX_DEFAULT_SUFFIX=OFF \
+-DGMX_BINARY_SUFFIX="_gpu" \
 -DCMAKE_C_COMPILER=gcc \
 -DCMAKE_CXX_COMPILER=g++ \
 -DGMX_DOUBLE=off \
 -DGMX_MPI=on \
--DGMX_SIMD=SSE4.1 \
+-DGMX_SIMD=AVX2_256 \
+-DBUILD_SHARED_LIBS=off \
 -DGMX_GPU=CUDA
 make -j $nthreads
 make install -j $nthreads
 
 cp -r $mpiddir/* $sourcedir/.
 cp $mpisdir/lib64/* $sourcedir/lib64/.
-cp $gpusdir/lib64/* $sourcedir/lib64/.
 cp $serialdir/lib64/* $sourcedir/lib64/.
-cp $gpusdir/bin/gmx_mpi $sourcedir/bin/mdrun_gpu
-cp $mpisdir/bin/gmx_mpi $sourcedir/bin/mdrun_mpi
+cp $gpusdir/bin/gmx_gpu $sourcedir/bin/.
+cp $mpisdir/bin/gmx_mpi $sourcedir/bin/.
 cp $serialdir/bin/gmx $sourcedir/bin/.
-cp $sourcedir/bin/gmx_mpi_d $sourcedir/bin/mdrun_mpi_d
-rm -f $sourcedir/bin/gmx_*
 
 rm -rf $mpisdir $gpusdir $mpiddir $serialdir $sourcedir/lib64/cmake
 
