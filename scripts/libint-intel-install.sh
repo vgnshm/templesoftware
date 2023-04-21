@@ -47,11 +47,11 @@ if [ -d $downloaddir/build-$name ]; then
 fi
 mkdir -p $downloaddir/build-$name
 cd $downloaddir/build-$name
-$downloaddir/$name/configure CC='icc' # CPPLIBS='-lgmp'
+$downloaddir/$name/configure CC='icc' CXX='icc' # CPPLIBS='-lgmp'
 make export
 tar $taroption $name-$version.$extension
 cd $downloaddir/build-$name/$name-$version
-cmake . -DCMAKE_INSTALL_PREFIX=$sourcedir -DLIBINT2_BUILD_SHARED_AND_STATIC_LIBS=ON
+cmake . -DCMAKE_INSTALL_PREFIX=$sourcedir -DCMAKE_CXX_COMPILER='icc' -DLIBINT2_BUILD_SHARED_AND_STATIC_LIBS=ON
 cmake --build . -j $nthreads
 cmake --build . --target install -j $nthreads
 
