@@ -159,7 +159,6 @@ fi
 
 cat > $moduledir/$name/$version.$subversion.lua << EOF
 -- -*- $name-$version.$subversion.lua -*- --
-depends_on("cuda")
 depends_on("gcc/9.3.0")
 depends_on("mpi/openmpi/2.1.1")
 depends_on("cuda/11.6.0")
