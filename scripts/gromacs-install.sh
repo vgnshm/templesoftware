@@ -168,10 +168,11 @@ help([[
 This module provides the Gromacs molecular dynamics software package.
 
 It contains the Gromacs suite of tools compiled for serial execution 
-using the 'gmx' prefix and several variants of 'mdrun' binaries:
-- mdrun or mdrun_mpi      : single precision CPU-only MPI+Threads binary
-- mdrun_d or mdrun_mpi_d  : double precision CPU-only MPI+Threads binary
-- mdrun_gpu               : single precision MPI binary with GPU support
+using the 'gmx' prefix and several variants of 'gmx_mpi' binaries with AVX2_256 precision:
+- gmx           : single precision CPU-only Threads binary
+- gmx_mpi       : single precision CPU-only MPI+Threads binary
+- gmx_mpi_d     : double precision CPU-only MPI+Threads binary
+- gmx_gpu       : single precision MPI binary with GPU support
 
 This also updates the environment variables PATH, LD_LIBRARY_PATH,
 PKG_CONFIG_PATH, MANPATH, GROMACS_DIR, GMXBIN, GMXLDLIB, GMXMAN, GMXDATA
